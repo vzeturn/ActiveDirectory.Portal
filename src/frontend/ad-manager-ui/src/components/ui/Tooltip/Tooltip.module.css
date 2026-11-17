@@ -1,0 +1,13 @@
+.content {
+  background: var(--color-text);
+  color: var(--color-surface-raised);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-dropdown);
+}
+
+.arrow {
+  fill: var(--color-text);
+}

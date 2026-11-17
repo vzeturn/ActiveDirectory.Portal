@@ -1,0 +1,246 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+/* ── Search field ─────────────────────────────────────────── */
+
+.searchField {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-text-subtle);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  height: var(--control-height-md);
+  padding: 0 var(--space-8) 0 var(--space-8);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+/* Subtle in-field indicator while a refined query refreshes existing results. */
+.refreshing {
+  position: absolute;
+  right: var(--space-3);
+  width: var(--space-4);
+  height: var(--space-4);
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-brand);
+  border-radius: var(--radius-full);
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Results region ───────────────────────────────────────── */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.message {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.messageError {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-style: solid;
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  text-align: left;
+}
+
+.count {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* At most five rows are visible; the list scrolls beyond that. Row height is
+   fixed (--control-height-lg) so the cap is exact. */
+.list {
+  --row-height: var(--control-height-lg);
+  margin: 0;
+  padding: var(--space-1);
+  list-style: none;
+  max-height: calc(var(--row-height) * 5 + var(--space-1) * 2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+.list::-webkit-scrollbar {
+  width: var(--space-2);
+}
+
+.list::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-full);
+  background: var(--color-border-strong);
+}
+
+.rowItem {
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.rowHighlighted {
+  background: var(--color-surface-raised);
+  box-shadow: inset 2px 0 0 var(--color-brand);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--row-height, var(--control-height-lg));
+  padding: 0 var(--space-2) 0 var(--space-3);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.labelText {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memberTag {
+  flex-shrink: 0;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-full);
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* Fixed width so Add / Remove / Adding… / ✓ Added never shift the layout. */
+.action,
+.doneAction {
+  flex-shrink: 0;
+  min-width: 104px;
+  justify-content: center;
+}
+
+.removeAction {
+  border-color: var(--color-danger-border);
+  color: var(--color-danger-text);
+}
+
+.removeAction:hover:not(:disabled) {
+  border-color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.doneAction {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: var(--control-height-sm);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-md);
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  opacity: 0.8;
+  animation: settle var(--duration-base) var(--ease-out);
+}
+
+@keyframes settle {
+  from {
+    opacity: 1;
+    transform: scale(0.96);
+  }
+}
+
+.rowError {
+  margin: 0;
+  padding: 0 var(--space-3) var(--space-2);
+  color: var(--color-danger-text);
+  font-size: var(--font-size-xs);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refreshing {
+    animation-duration: 2s;
+  }
+
+  .doneAction {
+    animation: none;
+  }
+
+  .input,
+  .rowItem {
+    transition: none;
+  }
+}

@@ -1,0 +1,110 @@
+/* Dark theme — redefines semantic tokens. Auto via prefers-color-scheme, manual override via [data-theme]. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-surface: var(--gray-950);
+    --color-surface-raised: var(--gray-900);
+    --color-surface-sunken: var(--gray-950);
+    --color-border: var(--gray-800);
+    --color-border-strong: var(--gray-700);
+
+    --color-text: var(--gray-100);
+    --color-text-muted: var(--gray-400);
+    --color-text-subtle: var(--gray-500);
+    --color-text-inverse: var(--gray-950);
+
+    --color-brand: var(--blue-400);
+    --color-brand-hover: var(--blue-300);
+    --color-brand-bg: rgba(47, 125, 225, 0.16);
+    --color-brand-text: var(--blue-300);
+
+    --color-danger: #f87171;
+    --color-danger-hover: #fca5a5;
+    --color-danger-bg: rgba(220, 38, 38, 0.16);
+    --color-danger-text: #fca5a5;
+    --color-danger-border: rgba(220, 38, 38, 0.35);
+
+    --color-warning: #fbbf24;
+    --color-warning-bg: rgba(217, 119, 6, 0.16);
+    --color-warning-text: #fcd34d;
+    --color-warning-border: rgba(217, 119, 6, 0.35);
+
+    --color-success: #4ade80;
+    --color-success-bg: rgba(22, 163, 74, 0.16);
+    --color-success-text: #86efac;
+    --color-success-border: rgba(22, 163, 74, 0.35);
+
+    --color-neutral-bg: var(--gray-800);
+    --color-neutral-text: var(--gray-300);
+    --color-neutral-border: var(--gray-700);
+
+    --color-focus-ring: var(--blue-400);
+    --color-overlay: rgba(0, 0, 0, 0.65);
+
+    --shadow-sm: var(--shadow-sm-dark);
+    --shadow-md: var(--shadow-md-dark);
+    --shadow-lg: var(--shadow-lg-dark);
+
+    --sidebar-bg: var(--gray-950);
+    --sidebar-bg-raised: #000000;
+    --sidebar-text: var(--gray-100);
+    --sidebar-text-muted: var(--gray-400);
+    --sidebar-active-bg: var(--blue-600);
+    --sidebar-active-text: #ffffff;
+    --sidebar-border: var(--gray-900);
+    --sidebar-focus-ring: var(--blue-400);
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-surface: var(--gray-950);
+  --color-surface-raised: var(--gray-900);
+  --color-surface-sunken: var(--gray-950);
+  --color-border: var(--gray-800);
+  --color-border-strong: var(--gray-700);
+
+  --color-text: var(--gray-100);
+  --color-text-muted: var(--gray-400);
+  --color-text-subtle: var(--gray-500);
+  --color-text-inverse: var(--gray-950);
+
+  --color-brand: var(--blue-400);
+  --color-brand-hover: var(--blue-300);
+  --color-brand-bg: rgba(47, 125, 225, 0.16);
+  --color-brand-text: var(--blue-300);
+
+  --color-danger: #f87171;
+  --color-danger-hover: #fca5a5;
+  --color-danger-bg: rgba(220, 38, 38, 0.16);
+  --color-danger-text: #fca5a5;
+  --color-danger-border: rgba(220, 38, 38, 0.35);
+
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(217, 119, 6, 0.16);
+  --color-warning-text: #fcd34d;
+  --color-warning-border: rgba(217, 119, 6, 0.35);
+
+  --color-success: #4ade80;
+  --color-success-bg: rgba(22, 163, 74, 0.16);
+  --color-success-text: #86efac;
+  --color-success-border: rgba(22, 163, 74, 0.35);
+
+  --color-neutral-bg: var(--gray-800);
+  --color-neutral-text: var(--gray-300);
+  --color-neutral-border: var(--gray-700);
+
+  --color-focus-ring: var(--blue-400);
+  --color-overlay: rgba(0, 0, 0, 0.65);
+
+  --shadow-sm: var(--shadow-sm-dark);
+  --shadow-md: var(--shadow-md-dark);
+  --shadow-lg: var(--shadow-lg-dark);
+
+  --sidebar-bg: var(--gray-950);
+  --sidebar-bg-raised: #000000;
+  --sidebar-text: var(--gray-100);
+  --sidebar-text-muted: var(--gray-400);
+  --sidebar-active-bg: var(--blue-600);
+  --sidebar-active-text: #ffffff;
+  --sidebar-border: var(--gray-900);
+  --sidebar-focus-ring: var(--blue-400);
+}

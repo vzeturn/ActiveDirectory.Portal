@@ -1,0 +1,92 @@
+.container {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: var(--z-toast);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+.success,
+.error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-inverse);
+  min-width: 280px;
+}
+
+.success[data-state='open'],
+.error[data-state='open'] {
+  animation: slideIn var(--duration-base) var(--ease-out);
+}
+
+.success[data-state='closed'],
+.error[data-state='closed'] {
+  animation: fadeOut var(--duration-fast) var(--ease-out);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .success[data-state='open'],
+  .error[data-state='open'],
+  .success[data-state='closed'],
+  .error[data-state='closed'] {
+    animation: none;
+  }
+}
+
+.success {
+  background: var(--color-success);
+}
+
+.error {
+  background: var(--color-danger);
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.text {
+  margin: 0;
+}
+
+.dismiss {
+  display: inline-flex;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.dismiss:focus-visible {
+  outline: 2px solid var(--color-text-inverse);
+  outline-offset: 2px;
+}

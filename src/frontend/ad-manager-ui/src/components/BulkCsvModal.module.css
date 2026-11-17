@@ -1,0 +1,14 @@
+.previewTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-3);
+  max-height: 300px;
+  font-size: var(--font-size-sm);
+}
+
+.previewTable th,
+.previewTable td {
+  text-align: left;
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
