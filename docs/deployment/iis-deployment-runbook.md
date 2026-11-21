@@ -139,25 +139,46 @@ Paste the encrypted output into `appsettings.Production.json`:
 }
 ```
 
-### Secrets:DiscordWebhookUrlEncrypted (optional)
+### Secrets:AlertHookUrlEncrypted (optional, recommended)
 
-A Discord webhook URL for admin notifications (leave empty if not used):
+Operational alerts go to the Request Tracking hub (Discord is no longer used). Get the
+project's hook URL with the RT `set_alert_hook` tool (project `ad-manager`; the URL is shown
+once and kept in the project's RT cloud kit as `RT_ALERT_HOOK_URL`), then either pass it to
+the deploy script:
 
-```bash
-dotnet ADManager.Api.dll encrypt-secret "https://discord.com/api/webhooks/1234567890/aBcDeFgHiJkLmNoPqRsTuVwXyZ"
+```powershell
+.\deploy\deploy.ps1 -AlertHookUrl "https://rt.hubvn.dev/hooks/alerts/ad-manager/<token>"
 ```
 
-Paste the encrypted output into `appsettings.Production.json`:
+or encrypt it by hand and paste the output into `appsettings.Production.json`:
+
+```bash
+dotnet ADManager.Api.dll encrypt-secret "https://rt.hubvn.dev/hooks/alerts/ad-manager/<token>"
+```
 
 ```json
 {
   "Secrets": {
-    "DiscordWebhookUrlEncrypted": "<paste-encrypted-url-here>"
+    "AlertHookUrlEncrypted": "<paste-encrypted-url-here>"
+  },
+  "Alerts": {
+    "Tenant": "<site name shown on the RT incident; defaults to the machine name>"
   }
 }
 ```
 
-If not using Discord notifications, leave this field as an empty string in `appsettings.Production.json`.
+Severity handling: `info` (successful operations) is only written to the log; `warning`
+(for example a password reset whose follow-up AD step failed) and `critical` are posted as
+JSON `{severity, title, text, tenant}` and the hub opens one incident request per alert.
+Alerts never carry passwords. Check the hook end to end from the server:
+
+```bash
+dotnet ADManager.Api.dll send-test-alert
+```
+
+It prints `Alert outcome: delivered (HTTP 204)` and an incident request appears on RT; close
+it there. `/api/health/detail` reports `alertHookConfigured`. Leave the field empty to only
+log alerts.
 
 ### Secrets:ApiKeyEncrypted, ApiKeyOwner, ApiKeyRole (optional)
 
@@ -257,7 +278,7 @@ Verify or update `C:\inetpub\ad-manager\appsettings.Production.json` with encryp
   "Secrets": {
     "ServiceAccountEncrypted": "<your-encrypted-service-account-blob>",
     "SessionSigningKeyEncrypted": "<your-encrypted-session-key>",
-    "DiscordWebhookUrlEncrypted": ""
+    "AlertHookUrlEncrypted": ""
   },
   "Cors": {
     "AllowedOrigins": []

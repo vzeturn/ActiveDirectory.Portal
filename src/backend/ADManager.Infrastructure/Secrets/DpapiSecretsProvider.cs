@@ -11,7 +11,7 @@ public sealed class DpapiSecretsProvider : ISecretsProvider
     private readonly DpapiProtectedSettings _settings;
     private ServiceAccountSecret? _serviceAccount;
     private string? _sessionSigningKey;
-    private string? _discordWebhookUrl;
+    private string? _alertHookUrl;
     private string? _apiKey;
 
     public DpapiSecretsProvider(IOptions<DpapiProtectedSettings> settings)
@@ -31,10 +31,10 @@ public sealed class DpapiSecretsProvider : ISecretsProvider
         return Task.FromResult(_sessionSigningKey!);
     }
 
-    public Task<string?> GetDiscordWebhookUrlAsync(CancellationToken ct = default)
+    public Task<string?> GetAlertHookUrlAsync(CancellationToken ct = default)
     {
         EnsureLoaded();
-        return Task.FromResult(_discordWebhookUrl);
+        return Task.FromResult(_alertHookUrl);
     }
 
     public Task<string?> GetApiKeyAsync(CancellationToken ct = default)
@@ -68,9 +68,9 @@ public sealed class DpapiSecretsProvider : ISecretsProvider
         var serviceAccountJson = Unprotect(_settings.ServiceAccountEncrypted);
         _serviceAccount = ParseServiceAccount(serviceAccountJson);
         _sessionSigningKey = Unprotect(_settings.SessionSigningKeyEncrypted);
-        _discordWebhookUrl = string.IsNullOrWhiteSpace(_settings.DiscordWebhookUrlEncrypted)
+        _alertHookUrl = string.IsNullOrWhiteSpace(_settings.AlertHookUrlEncrypted)
             ? null
-            : Unprotect(_settings.DiscordWebhookUrlEncrypted);
+            : Unprotect(_settings.AlertHookUrlEncrypted);
         _apiKey = string.IsNullOrWhiteSpace(_settings.ApiKeyEncrypted)
             ? null
             : Unprotect(_settings.ApiKeyEncrypted);

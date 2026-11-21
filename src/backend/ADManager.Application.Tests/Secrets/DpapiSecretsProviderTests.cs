@@ -48,17 +48,17 @@ public sealed class DpapiSecretsProviderTests
     }
 
     [Fact]
-    public async Task GetDiscordWebhookUrlAsync_NullWhenNotConfigured()
+    public async Task GetAlertHookUrlAsync_NullWhenNotConfigured()
     {
         var settings = new DpapiProtectedSettings
         {
             ServiceAccountEncrypted = Protect("""{"username":"a","password":"b","server":"c","domain":"d","baseDn":"e","ouBaseDn":"f"}"""),
             SessionSigningKeyEncrypted = Protect("key"),
-            DiscordWebhookUrlEncrypted = null,
+            AlertHookUrlEncrypted = null,
         };
         var provider = new DpapiSecretsProvider(Options.Create(settings));
 
-        var url = await provider.GetDiscordWebhookUrlAsync();
+        var url = await provider.GetAlertHookUrlAsync();
 
         Assert.Null(url);
     }

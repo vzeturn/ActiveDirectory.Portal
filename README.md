@@ -13,7 +13,7 @@ sessions, audit log and saved searches. Hosted on IIS on Windows Server (on-prem
 - Manage group membership and groups
 - Dashboard, audit log, saved searches
 - Admin and viewer roles mapped from AD groups; optional `X-Api-Key` access for automation
-- Optional Discord notifications
+- Operational alerts to the Request Tracking hub (warning/critical open an incident; info is logged)
 
 ## Architecture
 
@@ -26,7 +26,7 @@ src/
     ADManager.Api/               Controllers, auth, DI wiring, Program.cs
     ADManager.Application/       Use cases and abstractions (IActiveDirectoryGateway, ...)
     ADManager.Domain/            Plain models (AdUser, AdGroup, OperationResult, ...)
-    ADManager.Infrastructure/    AD adapter, DPAPI secrets, SQLite stores, Discord notifier
+    ADManager.Infrastructure/    AD adapter, DPAPI secrets, SQLite stores, RT alert hook sender
     ADManager.Application.Tests/ xUnit tests (fake AD gateway, no domain needed)
   frontend/
     ad-manager-ui/               React app, built to static files served by the API site
@@ -68,7 +68,7 @@ See the [IIS deployment runbook](docs/deployment/iis-deployment-runbook.md).
 
 ## Security notes
 
-- Secrets (AD service account, session signing key, Discord webhook, API key) are stored as
+- Secrets (AD service account, session signing key, RT alert hook URL, API key) are stored as
   DPAPI-encrypted values in `appsettings.Production.json` and decrypted on the same machine
   at startup. Encrypt them on the target server with
   `dotnet ADManager.Api.dll encrypt-secret "<plaintext>"`. Never commit real values.

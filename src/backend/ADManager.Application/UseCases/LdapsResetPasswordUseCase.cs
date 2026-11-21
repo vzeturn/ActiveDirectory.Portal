@@ -40,8 +40,8 @@ public sealed class LdapsResetPasswordUseCase
             await _notifications.NotifyAsync(new NotificationMessage(
                 $"Password Reset (LDAPS): {command.Username}",
                 $"Performed by {command.Actor}",
-                true,
-                new Dictionary<string, string> { ["User"] = command.Username, ["Actor"] = command.Actor, ["NewPassword"] = command.NewPassword },
+                AlertSeverity.Info,
+                new Dictionary<string, string> { ["User"] = command.Username, ["Actor"] = command.Actor },
                 DateTimeOffset.UtcNow), ct);
             return OperationResult<string>.Ok(command.Username);
         }

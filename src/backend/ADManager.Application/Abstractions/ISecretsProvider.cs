@@ -4,7 +4,7 @@ public interface ISecretsProvider
 {
     Task<ServiceAccountSecret> GetServiceAccountAsync(CancellationToken ct = default);
     Task<string> GetSessionSigningKeyAsync(CancellationToken ct = default);
-    Task<string?> GetDiscordWebhookUrlAsync(CancellationToken ct = default);
+    Task<string?> GetAlertHookUrlAsync(CancellationToken ct = default);
     Task<string?> GetApiKeyAsync(CancellationToken ct = default);
     Task<string?> GetApiKeyOwnerAsync(CancellationToken ct = default);
     Task<string?> GetApiKeyRoleAsync(CancellationToken ct = default);
