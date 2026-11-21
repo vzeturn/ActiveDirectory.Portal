@@ -18,7 +18,7 @@ public sealed class LdapsResetPasswordUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_Success_SendsDiscordNotificationWithPassword()
+    public async Task ExecuteAsync_Success_SendsInfoAlertWithoutPassword()
     {
         var gateway = new FakeActiveDirectoryGateway();
         var audit = new FakeAuditLogger();
@@ -29,7 +29,8 @@ public sealed class LdapsResetPasswordUseCaseTests
 
         Assert.True(result.Success);
         var sent = Assert.Single(notifications.Sent);
-        Assert.Equal("Manual1!Pass", sent.Fields["NewPassword"]);
+        Assert.Equal(AlertSeverity.Info, sent.Severity);
+        Assert.DoesNotContain(sent.Fields.Values, v => v.Contains("Manual1!Pass"));
         Assert.Equal("jdoe", sent.Fields["User"]);
     }
 

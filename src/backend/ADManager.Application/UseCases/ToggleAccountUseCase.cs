@@ -41,7 +41,7 @@ public sealed class ToggleAccountUseCase
             await _notifications.NotifyAsync(new NotificationMessage(
                 $"{operation}: {command.Username}",
                 $"Performed by {command.Actor}",
-                true,
+                AlertSeverity.Info,
                 new Dictionary<string, string> { ["User"] = command.Username, ["Actor"] = command.Actor },
                 DateTimeOffset.UtcNow), ct);
             return OperationResult<string>.Ok($"{operation} succeeded for '{command.Username}'.");

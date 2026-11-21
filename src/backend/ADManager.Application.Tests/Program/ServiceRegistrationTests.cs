@@ -19,7 +19,7 @@ public sealed class ServiceRegistrationTests
         {
             ["Secrets:ServiceAccountEncrypted"] = "ad-manager/service-account",
             ["Secrets:SessionSigningKeyEncrypted"] = "ad-manager/session-signing",
-            ["Secrets:DiscordWebhookUrlEncrypted"] = "ad-manager/discord-webhook",
+            ["Secrets:AlertHookUrlEncrypted"] = "ad-manager/alert-hook",
             ["ActiveDirectory:AdminGroupName"] = "Corp.IT.Admin",
             ["Storage:DatabasePath"] = Path.Combine(Path.GetTempPath(), "ad-manager-test.db")
         });

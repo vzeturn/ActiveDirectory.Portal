@@ -87,7 +87,7 @@ export interface HealthDetail {
   adReachable: boolean
   secretsLoaded: boolean
   auditDbWritable: boolean
-  discordConfigured: boolean
+  alertHookConfigured: boolean
 }
 
 export interface SavedSearch {

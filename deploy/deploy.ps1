@@ -19,7 +19,12 @@ param(
     [string]$AdServer = "",
     [string]$AdDomain = "",
     [string]$AdBaseDn = "",
-    [string]$AdOuBaseDn = ""
+    [string]$AdOuBaseDn = "",
+
+    # Request Tracking alert hook URL (from RT set_alert_hook). When given, it is
+    # DPAPI-encrypted into Secrets:AlertHookUrlEncrypted on every deploy (first or later).
+    # Warning/critical alerts go to the hub, which opens an incident request; info is only logged.
+    [string]$AlertHookUrl = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -409,7 +414,7 @@ if ($needsBootstrap) {
         Secrets = [ordered]@{
             ServiceAccountEncrypted    = $serviceAccountEncrypted
             SessionSigningKeyEncrypted = $sessionKeyEncrypted
-            DiscordWebhookUrlEncrypted = ""
+            AlertHookUrlEncrypted      = ""
         }
         Cors = [ordered]@{
             AllowedOrigins = @("https://$HostName")
@@ -426,6 +431,31 @@ if ($needsBootstrap) {
     }
 } else {
     Write-Host "appsettings.Production.json at $DeployPath already has a configured session signing key - leaving it untouched (not overwriting operator-configured secrets)." -ForegroundColor Green
+}
+
+# ---------------------------------------------------------------------------
+# Phase 6b: RT alert hook (replaces the retired Discord webhook)
+# ---------------------------------------------------------------------------
+$alertSettings = Get-Content $prodSettingsPath -Raw | ConvertFrom-Json
+$alertSettingsChanged = $false
+if ($alertSettings.Secrets.PSObject.Properties.Name -contains "DiscordWebhookUrlEncrypted") {
+    $alertSettings.Secrets.PSObject.Properties.Remove("DiscordWebhookUrlEncrypted")
+    $alertSettingsChanged = $true
+    Write-Host "Removed retired Secrets:DiscordWebhookUrlEncrypted (alerts now go to the RT hub)." -ForegroundColor Green
+}
+if (-not [string]::IsNullOrWhiteSpace($AlertHookUrl)) {
+    $alertHookB64Arg = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($AlertHookUrl.Trim()))
+    $alertHookOutput = & dotnet "$DeployPath\ADManager.Api.dll" encrypt-secret-b64 "$alertHookB64Arg" 2>&1
+    if ($LASTEXITCODE -ne 0) { throw "Failed to DPAPI-encrypt the RT alert hook URL. Output: $alertHookOutput" }
+    $alertHookEncrypted = ($alertHookOutput | Select-Object -Last 1).ToString().Trim()
+    $alertSettings.Secrets | Add-Member -NotePropertyName AlertHookUrlEncrypted -NotePropertyValue $alertHookEncrypted -Force
+    $alertSettingsChanged = $true
+    Write-Host "Secrets:AlertHookUrlEncrypted set. Verify with: dotnet `"$DeployPath\ADManager.Api.dll`" send-test-alert" -ForegroundColor Green
+} elseif ([string]::IsNullOrWhiteSpace($alertSettings.Secrets.AlertHookUrlEncrypted)) {
+    Write-Warning "No RT alert hook configured: warning/critical alerts are only logged. Re-run with -AlertHookUrl <url from RT set_alert_hook>."
+}
+if ($alertSettingsChanged) {
+    $alertSettings | ConvertTo-Json -Depth 10 | Set-Content -Path $prodSettingsPath -Encoding UTF8
 }
 
 # ---------------------------------------------------------------------------

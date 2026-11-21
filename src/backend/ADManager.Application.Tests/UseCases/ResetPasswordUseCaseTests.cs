@@ -118,7 +118,7 @@ public sealed class ResetPasswordUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_Success_NotificationIncludesNewPassword()
+    public async Task ExecuteAsync_Success_InfoAlertWithoutPassword()
     {
         var gateway = new FakeActiveDirectoryGateway();
         var audit = new FakeAuditLogger();
@@ -128,7 +128,8 @@ public sealed class ResetPasswordUseCaseTests
         await useCase.ExecuteAsync(new ResetPasswordCommand("jdoe", null, true, "ou", "admin1"));
 
         var sent = Assert.Single(notifications.Sent);
-        Assert.Equal("@Qua241224!VN7", sent.Fields["NewPassword"]);
+        Assert.Equal(AlertSeverity.Info, sent.Severity);
+        Assert.DoesNotContain(sent.Fields.Values, v => v.Contains("@Qua241224!VN7"));
     }
 
     private sealed class FollowUpFailsGateway : FakeActiveDirectoryGateway
@@ -138,16 +139,19 @@ public sealed class ResetPasswordUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_PartialFailure_NotificationStillIncludesNewPassword()
+    public async Task ExecuteAsync_PartialFailure_WarningAlertWithoutPassword_PasswordReturned()
     {
         var gateway = new FollowUpFailsGateway();
         var audit = new FakeAuditLogger();
         var notifications = new FakeNotificationSender();
         var useCase = new ResetPasswordUseCase(gateway, new FixedPasswordGenerator(), audit, notifications);
 
-        await useCase.ExecuteAsync(new ResetPasswordCommand("jdoe", null, true, "ou", "admin1"));
+        var result = await useCase.ExecuteAsync(new ResetPasswordCommand("jdoe", null, true, "ou", "admin1"));
 
+        Assert.Equal("@Qua241224!VN7", result.Value);
         var sent = Assert.Single(notifications.Sent);
-        Assert.Equal("@Qua241224!VN7", sent.Fields["NewPassword"]);
+        Assert.Equal(AlertSeverity.Warning, sent.Severity);
+        Assert.DoesNotContain(sent.Fields.Values, v => v.Contains("@Qua241224!VN7"));
+        Assert.DoesNotContain("@Qua241224!VN7", sent.Description);
     }
 }

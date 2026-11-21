@@ -30,7 +30,7 @@ export function HealthPage() {
         ['Active Directory reachable', health.adReachable],
         ['Secrets loaded', health.secretsLoaded],
         ['Audit database writable', health.auditDbWritable],
-        ['Discord notifications configured', health.discordConfigured]
+        ['RT alert hook configured', health.alertHookConfigured]
       ]
     : []
 

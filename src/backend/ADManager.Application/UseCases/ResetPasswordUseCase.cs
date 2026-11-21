@@ -51,23 +51,23 @@ public sealed class ResetPasswordUseCase
             await _notifications.NotifyAsync(new NotificationMessage(
                 $"Password Reset: {command.Username}",
                 $"Performed by {command.Actor}",
-                true,
-                new Dictionary<string, string> { ["User"] = command.Username, ["Actor"] = command.Actor, ["RequireChange"] = command.RequireChange.ToString(), ["NewPassword"] = newPassword },
+                AlertSeverity.Info,
+                new Dictionary<string, string> { ["User"] = command.Username, ["Actor"] = command.Actor, ["RequireChange"] = command.RequireChange.ToString() },
                 DateTimeOffset.UtcNow), ct);
             return OperationResult<string>.Ok(newPassword);
         }
         catch (PasswordSetButFollowUpFailedException ex)
         {
             // The password itself was already changed on AD before the failure - the
-            // operator must be told the new password even though the operation is
-            // reported as a partial failure, otherwise it is lost with no way to recover it.
+            // operator is told the new password through the returned result (never through
+            // the alert, which leaves the server) and the hub gets a warning for the AD fault.
             await _audit.LogAsync(new AuditEntry(DateTimeOffset.UtcNow, command.Actor, "ResetPassword", command.Username, true,
                 $"Password was set but a follow-up step failed: {ex.InnerException?.Message}"), ct);
             await _notifications.NotifyAsync(new NotificationMessage(
                 $"Password Reset (partial): {command.Username}",
                 $"Performed by {command.Actor}. Password was changed but a follow-up step failed: {ex.InnerException?.Message}",
-                true,
-                new Dictionary<string, string> { ["User"] = command.Username, ["Actor"] = command.Actor, ["RequireChange"] = command.RequireChange.ToString(), ["NewPassword"] = ex.NewPassword },
+                AlertSeverity.Warning,
+                new Dictionary<string, string> { ["User"] = command.Username, ["Actor"] = command.Actor, ["RequireChange"] = command.RequireChange.ToString() },
                 DateTimeOffset.UtcNow), ct);
             return OperationResult<string>.Ok(ex.NewPassword);
         }

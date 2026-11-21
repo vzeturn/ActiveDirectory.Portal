@@ -66,6 +66,15 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// ---- Operator CLI: `dotnet ADManager.Api.dll send-test-alert` ----
+// Posts one warning alert to the configured RT alert hook (Secrets:AlertHookUrlEncrypted)
+// so an operator can prove the hub opens an incident request from this server.
+if (args.Length >= 1 && args[0] == "send-test-alert")
+{
+    Environment.ExitCode = await AlertTestCommand.RunAsync(app.Services);
+    return;
+}
+
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.Use(async (context, next) =>
@@ -107,7 +116,7 @@ app.MapGet("/api/health/detail", async (
         secretsLoaded = false;
     }
 
-    var discordConfigured = !string.IsNullOrWhiteSpace(await secrets.GetDiscordWebhookUrlAsync(ct));
+    var alertHookConfigured = !string.IsNullOrWhiteSpace(await secrets.GetAlertHookUrlAsync(ct));
 
     var auditWritable = true;
     try
@@ -119,7 +128,7 @@ app.MapGet("/api/health/detail", async (
         auditWritable = false;
     }
 
-    return Results.Ok(ApiResponse<HealthDetail>.Ok(new HealthDetail(adReachable, secretsLoaded, auditWritable, discordConfigured)));
+    return Results.Ok(ApiResponse<HealthDetail>.Ok(new HealthDetail(adReachable, secretsLoaded, auditWritable, alertHookConfigured)));
 })
 .RequireAuthorization(policy => policy
     .AddAuthenticationSchemes(SessionAuthConstants.AllSchemes)
@@ -138,6 +147,7 @@ public static class ServiceRegistration
         builder.Services.Configure<DpapiProtectedSettings>(builder.Configuration.GetSection("Secrets"));
         builder.Services.Configure<SqliteStorageSettings>(builder.Configuration.GetSection("Storage"));
         builder.Services.Configure<SessionSettings>(builder.Configuration.GetSection("Sessions"));
+        builder.Services.Configure<AlertSettings>(builder.Configuration.GetSection("Alerts"));
 
         // ---- Storage --------------------------------------------------------------
         builder.Services.AddSingleton<SqliteConnectionFactory>();
@@ -166,7 +176,8 @@ public static class ServiceRegistration
                 sp.GetRequiredService<ActiveDirectoryGateway>(),
                 sp.GetRequiredService<IMemoryCache>(),
                 sp.GetRequiredService<AdCacheGenerationStore>()));
-        builder.Services.AddHttpClient<INotificationSender, DiscordNotificationSender>();
+        builder.Services.AddHttpClient<INotificationSender, RtAlertHookSender>(client =>
+            client.Timeout = TimeSpan.FromSeconds(10));
 
         // ---- Application use cases ----------------------------------------------
         builder.Services.AddScoped<LoginUseCase>();
