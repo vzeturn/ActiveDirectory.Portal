@@ -415,7 +415,7 @@ sentry_get() {
     die 3 "GET $path failed: network error (curl exit $rc)"
   fi
   if [[ "$status" != 2?? ]]; then
-    reason=$(py detail "$out")
+    reason=$(py detail "$out" || true)
     die 3 "GET $path failed: HTTP $status${reason:+ ($reason)}"
   fi
 }
