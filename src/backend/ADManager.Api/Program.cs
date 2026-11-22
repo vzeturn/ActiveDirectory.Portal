@@ -3,6 +3,7 @@ using ADManager.Api.Auth;
 using ADManager.Api.Contracts;
 using ADManager.Api.HealthChecks;
 using ADManager.Api.Middleware;
+using ADManager.Api.Observability;
 using ADManager.Api.Tools;
 using ADManager.Application.Abstractions;
 using ADManager.Application.UseCases;
@@ -40,8 +41,18 @@ if (args.Length == 2 && args[0] == "encrypt-secret")
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.secrets.json", optional: true, reloadOnChange: false);
 
+SentrySetup.AddSentry(builder);
 ServiceRegistration.RegisterServices(builder);
 var app = builder.Build();
+
+// ---- Operator CLI: `dotnet ADManager.Api.dll send-test-error` ----
+// Sends one test error to Sentry (Sentry:Dsn). Runs before secrets load so it also works
+// on a server whose AD configuration is broken.
+if (args.Length >= 1 && args[0] == "send-test-error")
+{
+    Environment.ExitCode = await SentryTestCommand.RunAsync(app.Services);
+    return;
+}
 
 // ---- Ensure the SQLite schema exists and eager-load secrets at startup ----
 using (var scope = app.Services.CreateScope())
@@ -133,6 +144,13 @@ app.MapGet("/api/health/detail", async (
 .RequireAuthorization(policy => policy
     .AddAuthenticationSchemes(SessionAuthConstants.AllSchemes)
     .RequireRole(SessionAuthConstants.AdminRole));
+
+// Public browser settings (the Sentry DSN is designed to be public; it only allows sending events).
+app.MapGet("/api/client-config", (SentrySettings sentry) => Results.Ok(ApiResponse<ClientConfig>.Ok(new ClientConfig(
+    sentry.IsEnabled ? sentry.Dsn : null,
+    sentry.Environment,
+    Math.Clamp(sentry.TracesSampleRate, 0, 1)))))
+    .AllowAnonymous();
 
 app.MapFallbackToFile("index.html");
 

@@ -76,6 +76,10 @@ See the [IIS deployment runbook](docs/deployment/iis-deployment-runbook.md).
 - Login is rate limited. Responses set `X-Content-Type-Options`, `X-Frame-Options` and
   `Referrer-Policy` headers.
 - API keys default to the Viewer role unless `ApiKeyRole` is set to `Admin`.
+- Errors are reported to Sentry when `Sentry:Dsn` is set (`deploy.ps1 -SentryDsn`), with
+  `SendDefaultPii` off and user names, DNs, e-mails, IPs, headers and bodies scrubbed before
+  sending. Test with `dotnet ADManager.Api.dll send-test-error`. The repo `.mcp.json` adds the
+  Sentry MCP server (`https://mcp.sentry.dev/mcp`) for Claude Code.
 
 ## License
 
