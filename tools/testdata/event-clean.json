@@ -1,0 +1,143 @@
+{
+  "id": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+  "eventID": "0f1e2d3c4b5a69788796a5b4c3d2e1f0",
+  "groupID": "1000001",
+  "projectID": "2000002",
+  "title": "LdapException: Bind failed for CN=[redacted],OU=[redacted] ([redacted])",
+  "message": "",
+  "culprit": "ADManager.Infrastructure.ActiveDirectory.LdapGateway in BindAsync",
+  "location": "ADManager.Infrastructure.ActiveDirectory.LdapGateway",
+  "platform": "csharp",
+  "type": "error",
+  "dateCreated": "2026-11-22T10:15:30.123000Z",
+  "dateReceived": "2026-11-22T10:15:31.456000Z",
+  "user": {
+    "id": null,
+    "email": null,
+    "username": null,
+    "ip_address": null,
+    "name": null,
+    "geo": null,
+    "data": null
+  },
+  "userReport": null,
+  "release": {
+    "version": "ad-manager@unknown",
+    "shortVersion": "ad-manager@unknown",
+    "projects": [{ "slug": "ad-manager", "name": "ad-manager" }]
+  },
+  "dist": null,
+  "sdk": {
+    "name": "sentry.dotnet.aspnetcore",
+    "version": "5.16.1",
+    "packages": [{ "name": "nuget:Sentry.AspNetCore", "version": "5.16.1" }]
+  },
+  "packages": {
+    "Sentry": "5.16.1.0",
+    "System.Private.CoreLib": "10.0.0.0",
+    "ADManager.Api": "1.0.0.0"
+  },
+  "metadata": {
+    "type": "LdapException",
+    "value": "Bind failed for CN=[redacted],OU=[redacted] ([redacted])"
+  },
+  "tags": [
+    { "key": "environment", "value": "production" },
+    { "key": "level", "value": "error" },
+    { "key": "release", "value": "ad-manager@unknown" },
+    { "key": "os", "value": "Windows 10.0.20348" },
+    { "key": "runtime", "value": ".NET 10.0.0" },
+    { "key": "server_name", "value": "[redacted]" },
+    { "key": "url", "value": "https://ad.example.test/api/users/[redacted]" },
+    { "key": "transaction", "value": "GET /api/users/{username}/groups/{groupName}" },
+    { "key": "referrer", "value": "https://ad.example.test/api/users/search?q=[redacted]" }
+  ],
+  "contexts": {
+    "runtime": { "name": ".NET", "version": "10.0.0", "raw_description": ".NET 10.0.0" },
+    "os": { "name": "Windows", "raw_description": "Microsoft Windows NT 10.0.20348.0" },
+    "browser": { "name": "Chrome", "version": "120.0.0.0" },
+    "trace": {
+      "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+      "span_id": "00f067aa0ba902b7",
+      "op": "http.server"
+    }
+  },
+  "context": { "Scope": "[redacted]" },
+  "entries": [
+    {
+      "type": "exception",
+      "data": {
+        "values": [
+          {
+            "type": "LdapException",
+            "value": "Bind failed for CN=[redacted],OU=[redacted] ([redacted]) on query '[redacted]'",
+            "module": "System.DirectoryServices.Protocols",
+            "stacktrace": {
+              "frames": [
+                {
+                  "function": "BindAsync",
+                  "module": "ADManager.Infrastructure.ActiveDirectory.LdapGateway",
+                  "package": "ADManager.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                  "filename": "src\\backend\\ADManager.Infrastructure\\ActiveDirectory\\LdapGateway.cs",
+                  "absPath": "C:\\inetpub\\wwwroot\\ad-manager\\ADManager.Infrastructure.dll",
+                  "lineNo": 87,
+                  "inApp": true
+                },
+                {
+                  "function": "GetUser",
+                  "module": "ADManager.Api.Controllers.UsersController",
+                  "package": "ADManager.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                  "filename": "src\\backend\\ADManager.Api\\Controllers\\UsersController.cs",
+                  "lineNo": 42,
+                  "inApp": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "breadcrumbs",
+      "data": {
+        "values": [
+          {
+            "timestamp": "2026-11-22T10:15:29.001000Z",
+            "category": "Microsoft.Hosting.Lifetime",
+            "level": "warning",
+            "message": "Now listening on http://127.0.0.1:5000 and http://[::1]:5000"
+          },
+          {
+            "timestamp": "2026-11-22T10:15:30.100000Z",
+            "category": "ADManager.Api.Middleware.GlobalExceptionMiddleware",
+            "level": "error",
+            "message": "Unhandled error for GET /api/users/[redacted] after 12.5 ms"
+          }
+        ]
+      }
+    },
+    {
+      "type": "request",
+      "data": {
+        "url": "https://ad.example.test/api/users/[redacted]",
+        "method": "GET",
+        "query": [],
+        "fragment": null,
+        "data": null,
+        "cookies": null,
+        "env": null,
+        "headers": [
+          ["Accept", "application/json"],
+          ["Host", "ad.example.test"]
+        ],
+        "inferredContentType": null
+      }
+    }
+  ],
+  "errors": [],
+  "fingerprints": ["{{ default }}"],
+  "_meta": {
+    "user": { "ip_address": { "": { "rem": [["@ip:replace", "s", 0, 4]] } } },
+    "entries": { "2": { "data": { "headers": { "": { "rem": [["@password:filter", "x"]] } } } } }
+  }
+}
