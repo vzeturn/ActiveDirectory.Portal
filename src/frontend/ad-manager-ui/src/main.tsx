@@ -2,6 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { initMonitoring } from './services/monitoring'
+
+void initMonitoring()
 
 const storedTheme = localStorage.getItem('ad-manager-theme')
 if (storedTheme === 'light' || storedTheme === 'dark') {

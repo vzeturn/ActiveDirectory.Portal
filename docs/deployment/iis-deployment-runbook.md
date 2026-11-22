@@ -180,6 +180,47 @@ It prints `Alert outcome: delivered (HTTP 204)` and an incident request appears 
 it there. `/api/health/detail` reports `alertHookConfigured`. Leave the field empty to only
 log alerts.
 
+### Sentry error reporting (optional, recommended)
+
+Unhandled server errors (`LogError` and above) and browser errors go to the Sentry project
+`ad-manager` (free plan, org `sr-l6`, EU region). The DSN is kept in the project's RT cloud
+kit as `SENTRY_DSN`; it only allows sending events and is also served to the browser by
+`GET /api/client-config`, so it is plain configuration rather than a DPAPI secret. Pass it
+to the deploy script, which writes `Sentry:Dsn` on every deploy:
+
+```powershell
+.\deploy\deploy.ps1 -SentryDsn "https://<key>@<org>.ingest.de.sentry.io/<project>"
+```
+
+or set it by hand in `appsettings.Production.json` (or the `SENTRY_DSN` environment variable):
+
+```json
+{
+  "Sentry": {
+    "Dsn": "https://<key>@<org>.ingest.de.sentry.io/<project>",
+    "Environment": "production",
+    "TracesSampleRate": 0.05
+  }
+}
+```
+
+Privacy: `SendDefaultPii` is off and every event is scrubbed before it leaves the server or
+browser. Users, IP addresses, cookies, headers (except Accept/Content-Type/Content-Length/
+Host), query strings and request bodies are dropped; user and group names in `/api/users/...`
+and `/api/groups/...` paths, distinguished names, e-mail/UPN, `DOMAIN\user` logons and quoted
+values are replaced with `[redacted]`; module paths keep only the file name. Outgoing HTTP
+calls are not recorded (the RT alert hook URL is secret). The Sentry project also has server-
+side data scrubbing and "prevent storing IP addresses" turned on. Only 5% of requests are
+traced for performance. Check it end to end from the server:
+
+```bash
+dotnet ADManager.Api.dll send-test-error
+```
+
+It prints `Sentry test error sent: event <id> (environment production)`; the event appears
+in Sentry as `SentryTestException`. Resolve it there. Leave `Sentry:Dsn` empty to turn
+reporting off (the browser SDK is then never downloaded).
+
 ### Secrets:ApiKeyEncrypted, ApiKeyOwner, ApiKeyRole (optional)
 
 Enables `X-Api-Key` header authentication for automation/integration clients (leave `ApiKeyEncrypted` empty to disable):

@@ -1,0 +1,7 @@
+<Project>
+  <!-- Map the build machine's source root to a neutral path so PDBs (and the stack traces
+       Sentry reads from them) never carry the build user's home directory. -->
+  <PropertyGroup>
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=/src/backend/</PathMap>
+  </PropertyGroup>
+</Project>

@@ -24,7 +24,12 @@ param(
     # Request Tracking alert hook URL (from RT set_alert_hook). When given, it is
     # DPAPI-encrypted into Secrets:AlertHookUrlEncrypted on every deploy (first or later).
     # Warning/critical alerts go to the hub, which opens an incident request; info is only logged.
-    [string]$AlertHookUrl = ""
+    [string]$AlertHookUrl = "",
+
+    # Sentry DSN of the ad-manager project (free plan). When given, it is written to
+    # Sentry:Dsn on every deploy. The DSN only allows sending events and is also served to the
+    # browser, so it is stored as plain configuration, not as a DPAPI secret.
+    [string]$SentryDsn = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -453,6 +458,22 @@ if (-not [string]::IsNullOrWhiteSpace($AlertHookUrl)) {
     Write-Host "Secrets:AlertHookUrlEncrypted set. Verify with: dotnet `"$DeployPath\ADManager.Api.dll`" send-test-alert" -ForegroundColor Green
 } elseif ([string]::IsNullOrWhiteSpace($alertSettings.Secrets.AlertHookUrlEncrypted)) {
     Write-Warning "No RT alert hook configured: warning/critical alerts are only logged. Re-run with -AlertHookUrl <url from RT set_alert_hook>."
+}
+if (-not [string]::IsNullOrWhiteSpace($SentryDsn)) {
+    $sentrySection = [pscustomobject]@{
+        Dsn              = $SentryDsn.Trim()
+        Environment      = "production"
+        TracesSampleRate = 0.05
+    }
+    if ($alertSettings.PSObject.Properties.Name -contains "Sentry") {
+        $sentrySection.Environment = if ($alertSettings.Sentry.Environment) { $alertSettings.Sentry.Environment } else { "production" }
+        $sentrySection.TracesSampleRate = if ($null -ne $alertSettings.Sentry.TracesSampleRate) { $alertSettings.Sentry.TracesSampleRate } else { 0.05 }
+    }
+    $alertSettings | Add-Member -NotePropertyName Sentry -NotePropertyValue $sentrySection -Force
+    $alertSettingsChanged = $true
+    Write-Host "Sentry:Dsn set. Verify with: dotnet `"$DeployPath\ADManager.Api.dll`" send-test-error" -ForegroundColor Green
+} elseif (-not ($alertSettings.PSObject.Properties.Name -contains "Sentry") -or [string]::IsNullOrWhiteSpace($alertSettings.Sentry.Dsn)) {
+    Write-Warning "No Sentry DSN configured: errors are not reported to Sentry. Re-run with -SentryDsn <DSN of the ad-manager Sentry project>."
 }
 if ($alertSettingsChanged) {
     $alertSettings | ConvertTo-Json -Depth 10 | Set-Content -Path $prodSettingsPath -Encoding UTF8

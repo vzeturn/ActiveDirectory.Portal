@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="Sentry.AspNetCore" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
